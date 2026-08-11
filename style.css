@@ -1,0 +1,356 @@
+/* 100 만들기 — 초등 수학 사고력 게임 */
+
+:root {
+  --blue: #1565c0;
+  --blue-dark: #0d47a1;
+  --blue-soft: #e3f0fd;
+  --ink: #1b2430;
+  --gray: #5a6673;
+  --line: #c9d3de;
+  --bg: #f4f7fb;
+  --white: #ffffff;
+  --warn: #b3261e;
+  --warn-soft: #fdecea;
+  --ok: #1b5e20;
+  --ok-soft: #e7f4e8;
+  --tap: 56px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  padding: 14px 14px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+
+button { font-family: inherit; }
+
+/* ---------- 시작 화면 ---------- */
+
+.title-box { text-align: center; margin: 8px 0 20px; }
+
+.game-title {
+  font-size: clamp(38px, 12vw, 64px);
+  margin: 0;
+  color: var(--blue-dark);
+  letter-spacing: -1px;
+}
+
+.game-sub { margin: 8px 0 0; color: var(--gray); font-size: 16px; }
+
+.section-label {
+  font-size: 18px;
+  margin: 22px 0 10px;
+  color: var(--blue-dark);
+}
+
+.mode-list { display: grid; gap: 12px; }
+
+.mode-btn {
+  display: block;
+  width: 100%;
+  min-height: var(--tap);
+  text-align: left;
+  padding: 16px;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  background: var(--white);
+  cursor: pointer;
+}
+
+.mode-btn.selected { border-color: var(--blue); background: var(--blue-soft); }
+
+.mode-name {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+.mode-check { visibility: hidden; margin-right: 8px; }
+.mode-btn.selected .mode-check { visibility: visible; }
+
+.mode-desc { display: block; margin-top: 4px; font-size: 15px; color: var(--gray); }
+
+.name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.name-field { display: block; }
+
+.name-tag { display: block; font-size: 14px; color: var(--gray); margin-bottom: 4px; }
+
+.name-field input {
+  width: 100%;
+  min-height: var(--tap);
+  font-size: 22px;
+  font-family: inherit;
+  padding: 8px 12px;
+  border: 3px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.name-field input:focus { outline: 3px solid var(--blue); border-color: var(--blue); }
+
+.rule-note {
+  margin-top: 24px;
+  padding: 14px;
+  background: var(--warn-soft);
+  border: 2px solid #f0b8b3;
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+/* ---------- 공통 버튼 ---------- */
+
+.big-btn {
+  display: block;
+  width: 100%;
+  min-height: 64px;
+  border-radius: 16px;
+  border: 3px solid transparent;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 12px 14px;
+}
+
+.big-btn.primary { background: var(--blue); color: var(--white); }
+.big-btn.primary:active { background: var(--blue-dark); }
+
+.big-btn.plain {
+  background: var(--white);
+  color: var(--blue-dark);
+  border-color: var(--blue);
+}
+
+.big-btn.choice {
+  background: var(--white);
+  border-color: var(--blue);
+  color: var(--ink);
+  text-align: left;
+}
+
+.big-btn.choice .ch-title { display: block; font-size: 21px; color: var(--blue-dark); }
+.big-btn.choice .ch-detail { display: block; font-size: 20px; margin-top: 4px; font-weight: 700; }
+
+.big-btn.choice.over { border-color: var(--warn); background: var(--warn-soft); }
+.big-btn.choice.over .ch-detail { color: var(--warn); }
+
+.big-btn:disabled { opacity: 0.45; cursor: default; }
+
+#btn-start { margin-top: 20px; }
+
+.controls { display: grid; gap: 12px; margin: 16px 0; }
+
+.text-btn {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 18px;
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: 16px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- 점수판 ---------- */
+
+.scoreboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.score-card {
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  background: var(--white);
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.score-card.active { border-color: var(--blue); background: var(--blue-soft); }
+.score-card.out { border-color: var(--warn); background: var(--warn-soft); }
+
+.sc-name { font-size: 16px; font-weight: 700; color: var(--gray); }
+.score-card.active .sc-name { color: var(--blue-dark); }
+
+.sc-turn-mark { visibility: hidden; margin-right: 4px; }
+.score-card.active .sc-turn-mark { visibility: visible; }
+
+.sc-score { font-size: clamp(44px, 15vw, 68px); font-weight: 700; line-height: 1.1; }
+.sc-unit { font-size: 18px; font-weight: 400; margin-left: 2px; color: var(--gray); }
+.sc-state { font-size: 14px; min-height: 20px; color: var(--gray); }
+.score-card.out .sc-state { color: var(--warn); font-weight: 700; }
+
+.turn-banner {
+  text-align: center;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  margin: 14px 0 6px;
+  min-height: 28px;
+}
+
+/* ---------- 카드 ---------- */
+
+.card-area { text-align: center; margin: 6px 0 10px; }
+
+.card {
+  width: 130px;
+  height: 176px;
+  margin: 0 auto;
+  border-radius: 18px;
+  border: 4px solid var(--blue-dark);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+.card.back {
+  background: var(--blue-dark);
+  color: var(--blue-soft);
+  font-size: 56px;
+}
+
+.card.flip { animation: flip 260ms ease-out; }
+
+@keyframes flip {
+  from { transform: scaleX(0.15); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card.flip { animation: none; }
+}
+
+.card-hint { font-size: 15px; color: var(--gray); margin: 8px 0 0; }
+
+.round-reveal {
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  padding: 10px 12px;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.round-reveal b { color: var(--blue-dark); }
+
+/* ---------- 남은 카드 ---------- */
+
+.remain-box {
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: var(--white);
+  padding: 10px 12px;
+  margin-bottom: 4px;
+}
+
+.remain-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.remain-title { font-size: 16px; font-weight: 700; color: var(--blue-dark); }
+
+.toggle-btn {
+  min-height: 48px;
+  min-width: 88px;
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--blue-dark);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.remain-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.remain-list li {
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 6px 2px;
+  font-size: 14px;
+}
+
+.remain-list .rn { display: block; font-size: 22px; font-weight: 700; color: var(--blue-dark); }
+.remain-list li.zero { background: #eef1f4; color: var(--gray); }
+.remain-list li.zero .rn { color: var(--gray); text-decoration: line-through; }
+
+/* ---------- 기록 ---------- */
+
+.logs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+
+.log-title { font-size: 15px; margin: 0 0 6px; color: var(--gray); }
+
+.log-list { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+
+.log-list li {
+  border-bottom: 1px solid var(--line);
+  padding: 5px 2px;
+}
+
+.log-list li.over { color: var(--warn); font-weight: 700; }
+
+/* ---------- 결과 ---------- */
+
+.result-title {
+  text-align: center;
+  font-size: clamp(28px, 9vw, 42px);
+  margin: 16px 0 6px;
+  color: var(--blue-dark);
+}
+
+.result-reason { text-align: center; font-size: 17px; color: var(--gray); margin: 0 0 16px; }
+
+.final-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.final-card {
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  background: var(--white);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.final-card.win { border-color: var(--ok); background: var(--ok-soft); }
+.final-card.out { border-color: var(--warn); background: var(--warn-soft); }
+
+.fc-name { font-size: 16px; font-weight: 700; color: var(--gray); }
+.fc-score { font-size: clamp(40px, 13vw, 60px); font-weight: 700; }
+.fc-note { font-size: 14px; min-height: 20px; }
+.final-card.out .fc-note { color: var(--warn); font-weight: 700; }
+.final-card.win .fc-note { color: var(--ok); font-weight: 700; }
+
+.history-list { padding-left: 22px; margin: 0; font-size: 16px; }
+.history-list li { padding: 5px 0; border-bottom: 1px solid var(--line); }
+.history-list .h-mode { color: var(--gray); font-size: 14px; margin-right: 6px; }
+.history-list b { color: var(--blue-dark); }
+
+@media (min-width: 640px) {
+  body { font-size: 18px; }
+  .card { width: 160px; height: 216px; font-size: 118px; }
+}

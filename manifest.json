@@ -1,0 +1,26 @@
+{
+  "name": "100 만들기 — 수학 대전",
+  "short_name": "100 만들기",
+  "description": "카드를 일의 자리·십의 자리에 넣어 100에 가장 가까운 점수를 만드는 2인 대전 게임",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7fb",
+  "theme_color": "#1565c0",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

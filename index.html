@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1565c0">
+<title>100 만들기</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= 시작 화면 ================= -->
+<section id="screen-start" class="screen">
+  <header class="title-box">
+    <h1 class="game-title">100 만들기</h1>
+    <p class="game-sub">카드를 일의 자리 · 십의 자리에 넣어<br>100에 가장 가깝게!</p>
+  </header>
+
+  <h2 class="section-label">1. 모드 고르기</h2>
+  <div class="mode-list">
+    <button type="button" class="mode-btn selected" data-mode="explore" aria-pressed="true">
+      <span class="mode-name"><span class="mode-check" aria-hidden="true">✓</span>탐구 모드</span>
+      <span class="mode-desc">카드 6장(1~6)을 둘이 함께 씁니다. 6장을 다 쓰면 끝!</span>
+    </button>
+    <button type="button" class="mode-btn" data-mode="prob" aria-pressed="false">
+      <span class="mode-name"><span class="mode-check" aria-hidden="true">✓</span>확률 모드</span>
+      <span class="mode-desc">카드 24장. 뽑기와 멈추기를 골라가며 진행합니다.</span>
+    </button>
+  </div>
+
+  <h2 class="section-label">2. 이름 쓰기</h2>
+  <div class="name-row">
+    <label class="name-field">
+      <span class="name-tag">첫 번째</span>
+      <input id="name1" type="text" value="1번" maxlength="6" autocomplete="off">
+    </label>
+    <label class="name-field">
+      <span class="name-tag">두 번째</span>
+      <input id="name2" type="text" value="2번" maxlength="6" autocomplete="off">
+    </label>
+  </div>
+
+  <button type="button" id="btn-start" class="big-btn primary">시작</button>
+
+  <p class="rule-note">
+    ⚠️ 점수가 <b>100을 넘으면</b> 그 사람은 바로 집니다.<br>
+    100에 딱 맞추는 것은 괜찮습니다.
+  </p>
+</section>
+
+<!-- ================= 게임 화면 ================= -->
+<section id="screen-game" class="screen hidden">
+  <div class="scoreboard">
+    <div class="score-card" id="sc0">
+      <div class="sc-name"><span class="sc-turn-mark" aria-hidden="true">▶</span><span class="sc-name-text"></span></div>
+      <div class="sc-score"><span class="sc-score-text">0</span><span class="sc-unit">점</span></div>
+      <div class="sc-state"></div>
+    </div>
+    <div class="score-card" id="sc1">
+      <div class="sc-name"><span class="sc-turn-mark" aria-hidden="true">▶</span><span class="sc-name-text"></span></div>
+      <div class="sc-score"><span class="sc-score-text">0</span><span class="sc-unit">점</span></div>
+      <div class="sc-state"></div>
+    </div>
+  </div>
+
+  <p id="turn-banner" class="turn-banner" aria-live="polite"></p>
+
+  <div class="card-area">
+    <div id="card" class="card back"><span id="card-face">?</span></div>
+    <p id="card-hint" class="card-hint"></p>
+  </div>
+
+  <div id="round-reveal" class="round-reveal hidden"></div>
+
+  <div id="remain-box" class="remain-box hidden">
+    <div class="remain-head">
+      <span class="remain-title">남은 카드 <span id="remain-total"></span>장</span>
+      <button type="button" id="btn-remain" class="toggle-btn" aria-pressed="true">숨기기</button>
+    </div>
+    <ul id="remain-list" class="remain-list"></ul>
+  </div>
+
+  <div class="controls">
+    <button type="button" id="btn-hit" class="big-btn primary hidden">카드 뽑기</button>
+    <button type="button" id="btn-ones" class="big-btn choice hidden">
+      <span class="ch-title">일의 자리에 넣기</span>
+      <span class="ch-detail"></span>
+    </button>
+    <button type="button" id="btn-tens" class="big-btn choice hidden">
+      <span class="ch-title">십의 자리에 넣기</span>
+      <span class="ch-detail"></span>
+    </button>
+    <button type="button" id="btn-stand" class="big-btn plain hidden">멈추기 (지금 점수로 확정)</button>
+  </div>
+
+  <div class="logs">
+    <div class="log-col">
+      <h3 id="log-title0" class="log-title"></h3>
+      <ol id="log0" class="log-list"></ol>
+    </div>
+    <div class="log-col">
+      <h3 id="log-title1" class="log-title"></h3>
+      <ol id="log1" class="log-list"></ol>
+    </div>
+  </div>
+
+  <button type="button" id="btn-quit" class="text-btn">게임 그만두기</button>
+</section>
+
+<!-- ================= 결과 화면 ================= -->
+<section id="screen-result" class="screen hidden">
+  <h2 id="result-title" class="result-title"></h2>
+  <p id="result-reason" class="result-reason"></p>
+
+  <div class="final-row">
+    <div class="final-card" id="fc0">
+      <div class="fc-name"></div>
+      <div class="fc-score"></div>
+      <div class="fc-note"></div>
+    </div>
+    <div class="final-card" id="fc1">
+      <div class="fc-name"></div>
+      <div class="fc-score"></div>
+      <div class="fc-note"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button type="button" id="btn-again" class="big-btn primary">다시 하기 (순서 바꿔서)</button>
+    <button type="button" id="btn-modes" class="big-btn plain">모드 바꾸기</button>
+  </div>
+
+  <h3 class="section-label">지금까지 나온 점수</h3>
+  <ol id="history" class="history-list"></ol>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
