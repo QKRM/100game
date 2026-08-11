@@ -96,15 +96,36 @@
     <button type="button" id="btn-stand" class="big-btn plain hidden">멈추기 (지금 점수로 확정)</button>
   </div>
 
-  <div class="logs">
-    <div class="log-col">
-      <h3 id="log-title0" class="log-title"></h3>
-      <ol id="log0" class="log-list"></ol>
-    </div>
-    <div class="log-col">
-      <h3 id="log-title1" class="log-title"></h3>
-      <ol id="log1" class="log-list"></ol>
-    </div>
+  <div id="sheet-slot-game" class="sheet-slot">
+    <table id="sheet" class="sheet">
+      <caption class="sheet-cap">넣을 때마다 점수가 쌓입니다</caption>
+      <thead>
+        <tr>
+          <th class="sh-corner" scope="col">순서</th>
+          <th id="sh-p0" class="sh-p" scope="col">
+            <span class="sh-mark" aria-hidden="true">▶</span><span class="sh-pname"></span>
+          </th>
+          <th id="sh-p1" class="sh-p" scope="col">
+            <span class="sh-mark" aria-hidden="true">▶</span><span class="sh-pname"></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="sheet-body"></tbody>
+      <tfoot>
+        <tr class="sh-sum">
+          <th scope="row">십의 자리 합</th>
+          <td id="sh-t0"></td><td id="sh-t1"></td>
+        </tr>
+        <tr class="sh-sum">
+          <th scope="row">일의 자리 합</th>
+          <td id="sh-o0"></td><td id="sh-o1"></td>
+        </tr>
+        <tr class="sh-total">
+          <th scope="row">총점</th>
+          <td id="sh-s0"></td><td id="sh-s1"></td>
+        </tr>
+      </tfoot>
+    </table>
   </div>
 
   <button type="button" id="btn-quit" class="text-btn">게임 그만두기</button>
@@ -127,6 +148,8 @@
       <div class="fc-note"></div>
     </div>
   </div>
+
+  <div id="sheet-slot-result" class="sheet-slot"></div>
 
   <div class="controls">
     <button type="button" id="btn-again" class="big-btn primary">다시 하기 (순서 바꿔서)</button>

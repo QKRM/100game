@@ -18,21 +18,37 @@
 
 * { box-sizing: border-box; }
 
+html {
+  height: 100%;
+  background: var(--bg);
+}
+
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--ink);
   font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
   -webkit-text-size-adjust: 100%;
 }
 
+/* 설치형(PWA) 창에서도 화면을 꽉 채운다 */
 body {
-  padding: 14px 14px 40px;
-  max-width: 720px;
-  margin: 0 auto;
+  min-height: 100%;
+  width: 100%;
+  background: var(--bg);
+  padding:
+    calc(12px + env(safe-area-inset-top))
+    calc(14px + env(safe-area-inset-right))
+    calc(28px + env(safe-area-inset-bottom))
+    calc(14px + env(safe-area-inset-left));
   font-size: 17px;
   line-height: 1.5;
+}
+
+.screen {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .hidden { display: none !important; }
@@ -300,20 +316,83 @@ button { font-family: inherit; }
 .remain-list li.zero { background: #eef1f4; color: var(--gray); }
 .remain-list li.zero .rn { color: var(--gray); text-decoration: line-through; }
 
-/* ---------- 기록 ---------- */
+/* ---------- 점수표 (넣을 때마다 한 줄씩 쌓임) ---------- */
 
-.logs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.sheet-slot { margin-top: 8px; }
 
-.log-title { font-size: 15px; margin: 0 0 6px; color: var(--gray); }
-
-.log-list { list-style: none; margin: 0; padding: 0; font-size: 14px; }
-
-.log-list li {
-  border-bottom: 1px solid var(--line);
-  padding: 5px 2px;
+.sheet {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: var(--white);
+  border: 3px solid var(--ink);
+  border-radius: 4px;
 }
 
-.log-list li.over { color: var(--warn); font-weight: 700; }
+.sheet-cap {
+  caption-side: top;
+  text-align: left;
+  font-size: 14px;
+  color: var(--gray);
+  padding: 0 0 6px;
+}
+
+.sheet th, .sheet td {
+  border: 2px solid var(--line);
+  padding: 6px 6px;
+  text-align: center;
+  height: 46px;
+}
+
+.sheet thead th {
+  background: var(--ink);
+  color: var(--white);
+  font-size: 18px;
+  border-color: var(--ink);
+}
+
+.sheet thead th.active { background: var(--blue); }
+.sheet thead th.out { background: var(--warn); }
+
+.sh-corner { width: 24%; font-size: 15px !important; font-weight: 400; }
+
+.sh-mark { visibility: hidden; margin-right: 4px; }
+.sheet thead th.active .sh-mark { visibility: visible; }
+
+.sheet tbody th {
+  background: #eef1f4;
+  color: var(--gray);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.cell-put { display: block; font-size: 13px; color: var(--gray); }
+.cell-run { display: block; font-size: 24px; font-weight: 700; line-height: 1.1; }
+
+.sheet td.col-active { background: var(--blue-soft); }
+.sheet td.over { background: var(--warn-soft); }
+.sheet td.over .cell-run { color: var(--warn); }
+.sheet td.stood .cell-put { font-size: 15px; font-weight: 700; color: var(--blue-dark); }
+
+.sheet tfoot .sh-sum th,
+.sheet tfoot .sh-sum td {
+  background: #e6eaef;
+  font-size: 16px;
+  height: 40px;
+}
+
+.sheet tfoot .sh-sum th { font-weight: 400; color: var(--ink); }
+.sheet tfoot .sh-sum td { font-weight: 700; }
+
+.sheet tfoot .sh-total th {
+  background: var(--ink);
+  color: var(--white);
+  font-size: 17px;
+  border-color: var(--ink);
+}
+
+.sheet tfoot .sh-total td { font-size: 32px; font-weight: 700; }
+.sheet tfoot .sh-total td.over { color: var(--warn); background: var(--warn-soft); }
 
 /* ---------- 결과 ---------- */
 
@@ -350,7 +429,108 @@ button { font-family: inherit; }
 .history-list .h-mode { color: var(--gray); font-size: 14px; margin-right: 6px; }
 .history-list b { color: var(--blue-dark); }
 
+/* ---------- 태블릿: 화면 폭을 그대로 쓴다 ---------- */
+
 @media (min-width: 640px) {
-  body { font-size: 18px; }
-  .card { width: 160px; height: 216px; font-size: 118px; }
+  body { font-size: 19px; padding-left: calc(20px + env(safe-area-inset-left)); padding-right: calc(20px + env(safe-area-inset-right)); }
+  .card { width: 170px; height: 228px; font-size: 124px; }
+  .big-btn { min-height: 72px; font-size: 24px; }
+  .big-btn.choice .ch-title { font-size: 23px; }
+  .big-btn.choice .ch-detail { font-size: 23px; }
+  .sheet th, .sheet td { height: 54px; font-size: 17px; }
+  .cell-run { font-size: 28px; }
+  .sheet tfoot .sh-total td { font-size: 38px; }
+  .mode-name { font-size: 27px; }
+  .turn-banner { font-size: 22px; }
+}
+
+/* 넓은 화면(태블릿 가로 등)은 두 칸으로 나눠 배치 */
+@media (min-width: 900px) {
+  #screen-game:not(.hidden) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 26px;
+    align-items: start;
+  }
+
+  #screen-game .scoreboard,
+  #screen-game .turn-banner,
+  #screen-game #btn-quit { grid-column: 1 / -1; }
+
+  #screen-game .card-area,
+  #screen-game #round-reveal,
+  #screen-game #remain-box,
+  #screen-game .controls { grid-column: 1; }
+
+  #sheet-slot-game { grid-column: 2; grid-row: 3 / span 6; margin-top: 0; }
+
+  #screen-result .final-row { max-width: 640px; margin: 0 auto; }
+
+  #screen-result .controls { max-width: 640px; margin: 16px auto; }
+  #screen-result #sheet-slot-result { max-width: 640px; margin: 0 auto; }
+  .history-list { max-width: 640px; margin: 0 auto; }
+}
+
+/* 태블릿 가로: 높이가 짧으니 한 화면에 다 들어오게 줄인다 */
+@media (min-width: 900px) and (max-height: 860px) {
+  body { padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+
+  .score-card { padding: 4px 8px; }
+  .sc-score { font-size: clamp(34px, 7vh, 54px); }
+  .sc-name { font-size: 15px; }
+  .sc-state { font-size: 13px; min-height: 16px; }
+
+  .turn-banner { margin: 8px 0 4px; font-size: 20px; }
+
+  .card-area { margin: 0; }
+  .card { width: 94px; height: 122px; font-size: 66px; border-width: 3px; }
+  .card.back { font-size: 40px; }
+  .card-hint { margin-top: 4px; font-size: 14px; }
+
+  #remain-box { margin-bottom: 0; padding: 6px 10px; }
+  .remain-list { margin-top: 6px; }
+  .remain-list li { padding: 3px 2px; font-size: 13px; }
+  .remain-list .rn { font-size: 19px; }
+
+  #screen-game .controls { gap: 10px; margin: 10px 0 0; }
+  #screen-game .big-btn { min-height: 60px; font-size: 22px; padding: 8px 12px; }
+  #screen-game .big-btn.choice .ch-title { font-size: 20px; }
+  #screen-game .big-btn.choice .ch-detail { font-size: 21px; margin-top: 2px; }
+
+  #btn-quit { margin-top: 2px; min-height: 48px; }
+
+  .sheet-cap { padding-bottom: 4px; }
+  .sheet th, .sheet td { height: 44px; padding: 4px 6px; font-size: 16px; }
+  .cell-put { font-size: 12px; }
+  .cell-run { font-size: 23px; }
+  .sheet tfoot .sh-sum th, .sheet tfoot .sh-sum td { height: 34px; font-size: 15px; }
+  .sheet tfoot .sh-total td { font-size: 30px; }
+
+  /* 줄이 많이 쌓이면 표 안쪽만 스크롤 (합계·총점은 항상 보이게) */
+  #sheet-slot-game {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+  }
+
+  #sheet-slot-game .sheet thead th { position: sticky; top: 0; z-index: 2; }
+  #sheet-slot-game .sheet tfoot th,
+  #sheet-slot-game .sheet tfoot td { position: sticky; z-index: 2; }
+  #sheet-slot-game .sheet tfoot tr:nth-child(1) th,
+  #sheet-slot-game .sheet tfoot tr:nth-child(1) td { bottom: 78px; }
+  #sheet-slot-game .sheet tfoot tr:nth-child(2) th,
+  #sheet-slot-game .sheet tfoot tr:nth-child(2) td { bottom: 44px; }
+  #sheet-slot-game .sheet tfoot tr:nth-child(3) th,
+  #sheet-slot-game .sheet tfoot tr:nth-child(3) td { bottom: 0; }
+
+  /* 시작 화면도 한 화면에 */
+  .title-box { margin: 2px 0 10px; }
+  .game-title { font-size: 40px; }
+  .game-sub { font-size: 15px; }
+  .section-label { margin: 12px 0 6px; font-size: 17px; }
+  .mode-list { grid-template-columns: 1fr 1fr; }
+  .mode-btn { padding: 12px; }
+  .mode-name { font-size: 23px; }
+  .mode-desc { font-size: 14px; }
+  #btn-start { margin-top: 14px; }
+  .rule-note { margin-top: 12px; padding: 10px 12px; font-size: 14px; }
 }

@@ -1,7 +1,7 @@
 /* 100 만들기 — 서비스 워커 (앱 셸 캐시, cache-first) */
 'use strict';
 
-var CACHE_NAME = 'make100-v1';
+var CACHE_NAME = 'make100-v2';
 
 var SHELL = [
   './',

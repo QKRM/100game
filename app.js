@@ -58,6 +58,12 @@ function goScreen(name) {
   show(el('screen-start'), name === 'start');
   show(el('screen-game'), name === 'game');
   show(el('screen-result'), name === 'result');
+
+  /* 점수표는 하나만 두고 게임 화면 ↔ 결과 화면으로 옮겨서 쓴다 */
+  var sheet = el('sheet');
+  var slot = el(name === 'result' ? 'sheet-slot-result' : 'sheet-slot-game');
+  if (sheet && sheet.parentNode !== slot) { slot.appendChild(sheet); }
+
   window.scrollTo(0, 0);
 }
 
@@ -227,27 +233,77 @@ function render(flip) {
       p.busted ? '✖ 100 넘음' : (p.stood ? '■ 멈춤' : '');
   }
 
-  /* 기록 */
-  for (i = 0; i < 2; i++) {
-    p = S.players[i];
-    el('log-title' + i).textContent = p.name + ' 기록 (' + p.log.length + ')';
-    var list = el('log' + i);
-    list.innerHTML = '';
-    for (var j = 0; j < p.log.length; j++) {
-      var e = p.log[j];
-      var li = document.createElement('li');
-      li.textContent = e.card + ' → ' + kindText(e.kind) +
-        ' (+' + placeValue(e.card, e.kind) + ') = ' + e.total;
-      if (e.total > MAX) { li.className = 'over'; }
-      list.appendChild(li);
-    }
-  }
-
+  renderSheet();
   renderCard(flip);
   renderReveal();
   renderRemaining();
   renderControls();
   renderBanner();
+}
+
+/* 야추 점수표처럼, 넣은 카드가 한 줄씩 쌓이는 표 */
+function renderSheet() {
+  var i, j, p, th, td, tr, e;
+
+  for (i = 0; i < 2; i++) {
+    p = S.players[i];
+    th = el('sh-p' + i);
+    th.querySelector('.sh-pname').textContent = p.name;
+    th.classList.toggle('active', S.phase !== 'over' && S.turn === i);
+    th.classList.toggle('out', p.busted);
+  }
+
+  /* 줄 수: 탐구 모드는 카드 6장이 정해져 있으니 6줄을 미리 보여준다 */
+  var rows;
+  if (S.mode === EXPLORE) {
+    rows = 6;
+  } else {
+    rows = Math.max(S.players[0].log.length, S.players[1].log.length, 1);
+    if (S.phase !== 'over') { rows += 1; }
+  }
+
+  var body = el('sheet-body');
+  body.innerHTML = '';
+  for (var r = 0; r < rows; r++) {
+    tr = document.createElement('tr');
+    th = document.createElement('th');
+    th.setAttribute('scope', 'row');
+    th.textContent = String(r + 1);
+    tr.appendChild(th);
+
+    for (i = 0; i < 2; i++) {
+      p = S.players[i];
+      td = document.createElement('td');
+      e = p.log[r];
+      if (e) {
+        td.innerHTML =
+          '<span class="cell-put">' + e.card + ' → ' +
+          (e.kind === 'tens' ? '십' : '일') + ' (+' + placeValue(e.card, e.kind) + ')</span>' +
+          '<span class="cell-run">' + e.total + '</span>';
+        if (e.total > MAX) { td.classList.add('over'); }
+      } else if (p.stood && r === p.log.length) {
+        td.innerHTML = '<span class="cell-put">■ 멈춤</span>';
+        td.classList.add('stood');
+      }
+      if (S.phase !== 'over' && S.turn === i) { td.classList.add('col-active'); }
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  }
+
+  /* 자리별 합계와 총점 */
+  for (i = 0; i < 2; i++) {
+    p = S.players[i];
+    var tens = 0, ones = 0, v;
+    for (j = 0; j < p.log.length; j++) {
+      v = placeValue(p.log[j].card, p.log[j].kind);
+      if (p.log[j].kind === 'tens') { tens += v; } else { ones += v; }
+    }
+    el('sh-t' + i).textContent = String(tens);
+    el('sh-o' + i).textContent = String(ones);
+    el('sh-s' + i).textContent = String(p.score);
+    el('sh-s' + i).classList.toggle('over', p.score > MAX);
+  }
 }
 
 function renderCard(flip) {
@@ -377,6 +433,7 @@ function renderBanner() {
 function renderResult() {
   var r = S.result;
 
+  renderSheet();
   el('result-title').textContent =
     r.winner === -1 ? '무승부!' : '🏆 ' + S.players[r.winner].name + ' 승리!';
   el('result-reason').textContent = r.reason;
